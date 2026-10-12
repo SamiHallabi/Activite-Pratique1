@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class AccountRestController {
@@ -28,21 +29,22 @@ public class AccountRestController {
 
     @PostMapping("/bankAccounts")
     public BankAccount save(@RequestBody BankAccount bankAccount) {
+        if (bankAccount.getId()==null) bankAccount.setId(UUID.randomUUID().toString());
         return bankAccountRepository.save(bankAccount);
     }
 
     @PutMapping("/bankAccounts/{id}")
     public BankAccount update(@RequestBody BankAccount bankAccount, @PathVariable String id) {
-        BankAccount bankAccount1 = bankAccountRepository.findById(id)
+        BankAccount account = bankAccountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(String.format("Account %s not found", id)));
-        if (bankAccount1.getBalance()!=null) {
-            bankAccount1.setBalance(bankAccount.getBalance());
+        if (bankAccount.getBalance()!=null) {
+            account.setBalance(bankAccount.getBalance());
         }
-        if (bankAccount1.getBalance()!=null) bankAccount1.setBalance(bankAccount.getBalance());
-        if (bankAccount1.getCurrency()!=null) bankAccount1.setCurrency(bankAccount.getCurrency());
-        if (bankAccount1.getCreatedAt()!=null) bankAccount1.setCreatedAt(new Date());
-        if (bankAccount1.getType()!=null) bankAccount1.setType(bankAccount.getType());
-        return bankAccountRepository.save(bankAccount1);
+        if (bankAccount.getBalance()!=null) account.setBalance(bankAccount.getBalance());
+        if (bankAccount.getCurrency()!=null) account.setCurrency(bankAccount.getCurrency());
+        if (bankAccount.getCreatedAt()!=null) account.setCreatedAt(new Date());
+        if (bankAccount.getType()!=null) account.setType(bankAccount.getType());
+        return bankAccountRepository.save(account);
     }
 
     @DeleteMapping("/bankAccounts/{id}")
